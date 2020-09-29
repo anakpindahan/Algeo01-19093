@@ -176,7 +176,7 @@ public class Matriks{
 	public static void toMatriksSegitigaAtas(Matriks matriks){
 		int idbrs, idkol, cidbrs, lastidbrs = matriks.nbrs - 1;
 		boolean kolfullzero;
-		
+	
 		for(idkol = matriks.nkol - 1; idkol >= 0; idkol--){
 			kolfullzero = true;
 			idbrs = matriks.nbrs - 1;
@@ -235,7 +235,6 @@ public class Matriks{
 		int idbrs = 0, idkol = 0;
 		boolean brsfullzero = false;
 		boolean foundnonzero;
-		
 		toMatriksSegitigaBawah(matriks);
 		while(!brsfullzero && idbrs < matriks.nbrs){
 			foundnonzero = false;
