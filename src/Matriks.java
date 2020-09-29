@@ -138,21 +138,17 @@ public class Matriks{
 			matriks.matriks[idbrs][kol] *= k;
 		}
 	}
-
-/*	
-	Prosedur menuliskan matriks ke layar
+	
+	// Prosedur menuliskan matriks ke layar
 	public static void tulisMatriks(Matriks matriks){
 		int idbrs, idkol;
-		for(idbrs = 0; idbrs < matriks.nbrs - 1; idbrs++){
-			for(idkol = 0; idkol < matriks.nkol; idkol++){
-				;
+		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
+			for(idkol = 0; idkol < matriks.nkol - 1; idkol++){
+				System.out.printf("%f ", matriks.matriks[idbrs][idkol]);
 			}
-		}
-		for(idkol = 0; idkol < matriks.nkol; idkol++){
-			
+			System.out.printf("%f%n", matriks.matriks[matriks.nbrs - 1][matriks.nkol - 1]);
 		}
 	}
-*/
 	
 	// Fungsi membuat matriks satuan
 	public static Matriks matriksSatuan(int n){
@@ -241,7 +237,7 @@ public class Matriks{
 			foundnonzero = false;
 			while(!foundnonzero && idkol < matriks.nkol){
 				if(matriks.matriks[idbrs][idkol] != 0){
-					kalikBaris(matriks, 1/idbrs, matriks.matriks[idbrs][idkol]);
+					kalikBaris(matriks, idbrs, 1/matriks.matriks[idbrs][idkol]);
 					foundnonzero = true;
 				}
 			}
@@ -250,6 +246,7 @@ public class Matriks{
 			}
 			idbrs++;
 		}
+		tulisMatriks(matriks);
 	}
 	
 	// Prosedur inverse matriks versi 1
