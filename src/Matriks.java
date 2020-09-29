@@ -20,7 +20,7 @@ public class Matriks{
 		nkol = m[0].length;
 		matriks = new double[nbrs][nkol];
 		for(idbrs = 0; idbrs < nbrs; idbrs++){
-			for(idkol = 0; idkol < nbrs; idkol++){
+			for(idkol = 0; idkol < nkol; idkol++){
 				matriks[idbrs][idkol] = m[idbrs][idkol];
 			}
 		}
@@ -78,21 +78,29 @@ public class Matriks{
 	}
 	
 	// Prosedur menukar dua baris dari matriks
-	public static void tukarBaris(Matriks matriks, int brs1, int brs2){
+	public static Matriks tukarBaris(Matriks matriks, int brs1, int brs2){
 		int idkol;
+		double temp;
 		
 		for(idkol = 0; idkol < matriks.nkol; idkol++){
-			swapp(matriks.matriks[brs1][idkol], matriks.matriks[brs2][idkol]);
+			temp = matriks.matriks[brs1][idkol];
+			matriks.matriks[brs1][idkol] = matriks.matriks[brs2][idkol];
+			matriks.matriks[brs2][idkol] = temp;
 		}
+		return(matriks);
 	}
 	
 	// Prosedur menukar dua kolom dari matriks
-	public static void tukarKolom(Matriks matriks, int kol1, int kol2){
+	public static Matriks tukarKolom(Matriks matriks, int kol1, int kol2){
 		int idbrs;
+		double temp;
 		
 		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
-			swapp(matriks.matriks[idbrs][kol1], matriks.matriks[idbrs][kol2]);
+			temp = matriks.matriks[idbrs][kol1];
+			matriks.matriks[idbrs][kol1] = matriks.matriks[idbrs][kol2];
+			matriks.matriks[idbrs][kol2] = temp;
 		}
+		return(matriks);
 	}
 	
 	// Fungsi mengecek apakah sebuah matriks SPL punya solusi
@@ -108,35 +116,39 @@ public class Matriks{
 	}
 	
 	// Prosedur menambahkan baris brsdiff dengan k kali baris brssame
-	public static void pluskBaris(Matriks matriks, int brssame, int brsdiff, double k){
+	public static Matriks pluskBaris(Matriks matriks, int brssame, int brsdiff, double k){
 		int idkol;
 		for(idkol = 0; idkol < matriks.nkol; idkol++){
-			brsdiff += k*matriks.matriks[brssame][idkol];
+			matriks.matriks[brsdiff][idkol] += k*matriks.matriks[brssame][idkol];
 		}
+		return(matriks);
 	}
 	
 	// Prosedur menambahkan baris brsdiff dengan k kali baris brssame
-	public static void pluskKolom(Matriks matriks, int kolsame, int koldiff, double k){
+	public static Matriks pluskKolom(Matriks matriks, int kolsame, int koldiff, double k){
 		int idbrs;
 		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
-			koldiff += k*matriks.matriks[idbrs][kolsame];
+			matriks.matriks[idbrs][koldiff] += k*matriks.matriks[idbrs][kolsame];
 		}
+		return(matriks);
 	}
 	
 	// Prosedur mengalikan baris brs dengan k
-	public static void kalikBaris(Matriks matriks, int brs, double k){
+	public static Matriks kalikBaris(Matriks matriks, int brs, double k){
 		int idkol;
 		for(idkol = 0; idkol < matriks.nkol; idkol++){
 			matriks.matriks[brs][idkol] *= k;
 		}
+		return(matriks);
 	}
 	
 	// Prosedur mengalikan kolom kol dengan k
-	public static void kalikKolom(Matriks matriks, int kol, double k){
+	public static Matriks kalikKolom(Matriks matriks, int kol, double k){
 		int idbrs;
 		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
 			matriks.matriks[idbrs][kol] *= k;
 		}
+		return(matriks);
 	}
 	
 	// Prosedur menuliskan matriks ke layar
@@ -146,7 +158,7 @@ public class Matriks{
 			for(idkol = 0; idkol < matriks.nkol - 1; idkol++){
 				System.out.printf("%f ", matriks.matriks[idbrs][idkol]);
 			}
-			System.out.printf("%f%n", matriks.matriks[matriks.nbrs - 1][matriks.nkol - 1]);
+			System.out.printf("%f%n", matriks.matriks[idbrs][matriks.nkol -1]);
 		}
 	}
 	
@@ -169,7 +181,7 @@ public class Matriks{
 	}
 	
 	//Prosedur membuat matriks menjadi segitiga atas
-	public static void toMatriksSegitigaAtas(Matriks matriks){
+	public static Matriks toMatriksSegitigaAtas(Matriks matriks){
 		int idbrs, idkol, cidbrs, lastidbrs = matriks.nbrs - 1;
 		boolean kolfullzero;
 	
@@ -185,16 +197,17 @@ public class Matriks{
 			}
 			cidbrs = idbrs;
 			
-			tukarBaris(matriks, cidbrs, lastidbrs);
+			matriks = tukarBaris(matriks, cidbrs, lastidbrs);
 			
 			for(idbrs = cidbrs - 1; idbrs >=0; idbrs--){
 				if(matriks.matriks[idbrs][idkol] != 0){
-					pluskBaris(matriks, lastidbrs, idbrs, -(matriks.matriks[lastidbrs][idkol]/matriks.matriks[idbrs][idkol]));
+					matriks = pluskBaris(matriks, idbrs, lastidbrs, -(matriks.matriks[lastidbrs][idkol]/matriks.matriks[idbrs][idkol]));
 				}
 			}
 			
 			lastidbrs--;
 		}
+		return(matriks);
 	}
 	
 	// Prosedur membuat matriks menjadi matriks segitiga bawah
