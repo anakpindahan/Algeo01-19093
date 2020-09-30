@@ -20,7 +20,7 @@ public class Matriks{
 		nkol = m[0].length;
 		matriks = new double[nbrs][nkol];
 		for(idbrs = 0; idbrs < nbrs; idbrs++){
-			for(idkol = 0; idkol < nbrs; idkol++){
+			for(idkol = 0; idkol < nkol; idkol++){
 				matriks[idbrs][idkol] = m[idbrs][idkol];
 			}
 		}
@@ -78,21 +78,29 @@ public class Matriks{
 	}
 	
 	// Prosedur menukar dua baris dari matriks
-	public static void tukarBaris(Matriks matriks, int brs1, int brs2){
+	public static Matriks tukarBaris(Matriks matriks, int brs1, int brs2){
 		int idkol;
+		double temp;
 		
 		for(idkol = 0; idkol < matriks.nkol; idkol++){
-			swapp(matriks.matriks[brs1][idkol], matriks.matriks[brs2][idkol]);
+			temp = matriks.matriks[brs1][idkol];
+			matriks.matriks[brs1][idkol] = matriks.matriks[brs2][idkol];
+			matriks.matriks[brs2][idkol] = temp;
 		}
+		return(matriks);
 	}
 	
 	// Prosedur menukar dua kolom dari matriks
-	public static void tukarKolom(Matriks matriks, int kol1, int kol2){
+	public static Matriks tukarKolom(Matriks matriks, int kol1, int kol2){
 		int idbrs;
+		double temp;
 		
 		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
-			swapp(matriks.matriks[idbrs][kol1], matriks.matriks[idbrs][kol2]);
+			temp = matriks.matriks[idbrs][kol1];
+			matriks.matriks[idbrs][kol1] = matriks.matriks[idbrs][kol2];
+			matriks.matriks[idbrs][kol2] = temp;
 		}
+		return(matriks);
 	}
 	
 	// Fungsi mengecek apakah sebuah matriks SPL punya solusi
@@ -108,51 +116,66 @@ public class Matriks{
 	}
 	
 	// Prosedur menambahkan baris brsdiff dengan k kali baris brssame
-	public static void pluskBaris(Matriks matriks, int brssame, int brsdiff, double k){
+	public static Matriks pluskBaris(Matriks matriks, int brssame, int brsdiff, double k){
 		int idkol;
 		for(idkol = 0; idkol < matriks.nkol; idkol++){
-			brsdiff += k*matriks.matriks[brssame][idkol];
+			matriks.matriks[brsdiff][idkol] += k*matriks.matriks[brssame][idkol];
 		}
+		return(matriks);
 	}
 	
 	// Prosedur menambahkan baris brsdiff dengan k kali baris brssame
-	public static void pluskKolom(Matriks matriks, int kolsame, int koldiff, double k){
+	public static Matriks pluskKolom(Matriks matriks, int kolsame, int koldiff, double k){
 		int idbrs;
 		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
-			koldiff += k*matriks.matriks[idbrs][kolsame];
+			matriks.matriks[idbrs][koldiff] += k*matriks.matriks[idbrs][kolsame];
 		}
+		return(matriks);
 	}
 	
 	// Prosedur mengalikan baris brs dengan k
-	public static void kalikBaris(Matriks matriks, int brs, double k){
+	public static Matriks kalikBaris(Matriks matriks, int brs, double k){
 		int idkol;
 		for(idkol = 0; idkol < matriks.nkol; idkol++){
 			matriks.matriks[brs][idkol] *= k;
 		}
+		return(matriks);
 	}
 	
 	// Prosedur mengalikan kolom kol dengan k
-	public static void kalikKolom(Matriks matriks, int kol, double k){
+	public static Matriks kalikKolom(Matriks matriks, int kol, double k){
 		int idbrs;
 		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
 			matriks.matriks[idbrs][kol] *= k;
 		}
+		return(matriks);
 	}
-
-/*	
-	Prosedur menuliskan matriks ke layar
-	public static void tulisMatriks(Matriks matriks){
-		int idbrs, idkol;
-		for(idbrs = 0; idbrs < matriks.nbrs - 1; idbrs++){
-			for(idkol = 0; idkol < matriks.nkol; idkol++){
-				;
+	
+	// Proseddur mengalikan dua buah matriks
+	public static Matriks kaliMatriks(Matriks matriks1, Matriks matriks2){
+		double temp;
+		int idbrs, idkol, id; 
+		Matriks matriks = new Matriks(matriks1.nbrs, matriks2.nkol);
+		for(idbrs = 0; idbrs < matriks1.nbrs; idbrs++){
+			for(idkol = 0; idkol < matriks2.nkol; idkol++){
+				for(id = 0; id < matriks1.nkol; id++){
+					matriks.matriks[idbrs][idkol] += matriks1.matriks[idbrs][id] * matriks2.matriks[id][idkol];
+				}
 			}
 		}
-		for(idkol = 0; idkol < matriks.nkol; idkol++){
-			
+		return(matriks);
+	}
+	
+	// Prosedur menuliskan matriks ke layar
+	public static void tulisMatriks(Matriks matriks){
+		int idbrs, idkol;
+		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
+			for(idkol = 0; idkol < matriks.nkol - 1; idkol++){
+				System.out.printf("%f ", matriks.matriks[idbrs][idkol]);
+			}
+			System.out.printf("%f%n", matriks.matriks[idbrs][matriks.nkol -1]);
 		}
 	}
-*/
 	
 	// Fungsi membuat matriks satuan
 	public static Matriks matriksSatuan(int n){
@@ -173,7 +196,7 @@ public class Matriks{
 	}
 	
 	//Prosedur membuat matriks menjadi segitiga atas
-	public static void toMatriksSegitigaAtas(Matriks matriks){
+	public static Matriks toMatriksSegitigaAtas(Matriks matriks){
 		int idbrs, idkol, cidbrs, lastidbrs = matriks.nbrs - 1;
 		boolean kolfullzero;
 	
@@ -189,16 +212,17 @@ public class Matriks{
 			}
 			cidbrs = idbrs;
 			
-			tukarBaris(matriks, cidbrs, lastidbrs);
+			matriks = tukarBaris(matriks, cidbrs, lastidbrs);
 			
 			for(idbrs = cidbrs - 1; idbrs >=0; idbrs--){
 				if(matriks.matriks[idbrs][idkol] != 0){
-					pluskBaris(matriks, lastidbrs, idbrs, -(matriks.matriks[lastidbrs][idkol]/matriks.matriks[idbrs][idkol]));
+					matriks = pluskBaris(matriks, idbrs, lastidbrs, -(matriks.matriks[lastidbrs][idkol]/matriks.matriks[idbrs][idkol]));
 				}
 			}
 			
 			lastidbrs--;
 		}
+		return(matriks);
 	}
 	
 	// Prosedur membuat matriks menjadi matriks segitiga bawah
@@ -240,7 +264,7 @@ public class Matriks{
 			foundnonzero = false;
 			while(!foundnonzero && idkol < matriks.nkol){
 				if(matriks.matriks[idbrs][idkol] != 0){
-					kalikBaris(matriks, 1/idbrs, matriks.matriks[idbrs][idkol]);
+					kalikBaris(matriks, idbrs, 1/matriks.matriks[idbrs][idkol]);
 					foundnonzero = true;
 				}
 			}
@@ -249,9 +273,10 @@ public class Matriks{
 			}
 			idbrs++;
 		}
+		tulisMatriks(matriks);
 	}
 	
-	// Prosedur inverse matriks versi 1
+	// Prosedur inverse matriks versi 1 - Operasi Baris Elementer
 	public static Matriks inverse1(Matriks matriks){
 		
 		Matriks iden = matriksSatuan(matriks.nbrs);
@@ -278,21 +303,81 @@ public class Matriks{
 		return(matriks);
 	}
 	
-	// Fungsi determinan
-	public static double determinan(Matriks matriks){
-		return(0);
+	// Fungsi Determinan Matriks versi 1 - Operasi Baris Elementer
+	public static double determinan1(Matriks matriks){
+
+		// KAMUS
+		Matriks matout = new Matriks(matriks.nbrs, matriks.nkol);
+		double det = 1;
+		int i, j, k, x;
+		double ntukar = 1;
+		boolean brsfullnol;
+		double rasio, temp;
+		
+		// ALGORITMA
+		
+		// Salin matriks
+		for(i = 0; i < matriks.nbrs; i++){
+			for (j = 0; j < matriks.nkol; j++){
+				matout.matriks[i][j] = matriks.matriks[i][j];
+			}
+		}
+		
+		// Jadiin matriks segitiga bawah
+		for (i = 0; i < matriks.nbrs; i++){
+			if (matout.matriks[i][i] == 0){
+				brsfullnol = true;
+				x = i+1;
+				while(brsfullnol && (x < matriks.nbrs)){
+					if(matout.matriks[x][i] != 0){
+						for(k = 0; k < matriks.nkol; k++){
+							temp = matout.matriks[i][k];
+							matout.matriks[i][k] = matout.matriks[x][k];
+							matout.matriks[x][k] = temp;
+						}
+						ntukar *= -1;
+						brsfullnol = false;                    
+					} else {
+						x += 1;
+					}
+				}
+				if(brsfullnol){
+					det = 0;
+				}
+			} else {
+				for(j = i+1; j < matriks.nkol; j++){
+					rasio = matout.matriks[j][i]/matout.matriks[i][i];
+					for(k = 0; k < matriks.nkol; k++){
+						matout.matriks[j][k] -= (matout.matriks[i][k]*rasio);
+					}
+				}
+			}
+		}
+		
+		// Get the det
+		for(i = 0; i < matriks.nbrs; i++){
+			det *= matout.matriks[i][i];
+		}
+		
+		return(det);
 	}
 		
+	// Fungsi Determinan Matriks versi 2 - Metode ekspansi kofaktor
+	public static double determinan2(Matriks matriks){
+		return(0);
+	}
+	
 	// Prosedur menu utama
 	public static void main(String[] args){
-		boolean akses = true, valid, validspl;
-		int pilihan = 0, pilspl = 0;
+		boolean akses = true, valid, validspl, validdet;
+		int pilihan = 0, pilspl = 0, pildet = 0;
 		int brs = 0, kol = 0;
 		Scanner sc = new Scanner(System.in);
 		double[][] isimatriks;
 		
 		while(akses){
 			valid = false;
+			System.out.println("---------UwU---------");
 			System.out.println("MENU");
 			System.out.println("1. Sistem Persamaan Linear");
 			System.out.println("2. Determinan");
@@ -353,15 +438,36 @@ public class Matriks{
 					}
 					break;
 				case 2:
-					isimatriks = bacaIsiMatriks();
-					Matriks matriks2 = new Matriks(isimatriks);
-					
-					System.out.println(determinan(matriks2));
+					validdet = false;
+					System.out.println("1. Metode Operasi Baris Elementer");
+					System.out.println("2. Metode Kofaktor");
+					while(!validdet){
+						System.out.println("Pilih menu yang ingin dipilih dengan angka 1-2: ");
+						pildet = sc.nextInt();
+						if(pilihan > 2 || pilihan < 1){
+							System.out.println("Pilihan tidak ada. Masukkan kembali");
+						} else {
+							validdet = true;
+						}
+					}
+					switch(pildet){
+						case 1:
+							isimatriks = bacaIsiMatriks();
+							Matriks matriks21 = new Matriks(isimatriks);
+							System.out.printf("Determinan matriks ini adalah %f%n", determinan1(matriks21));
+							break;
+						case 2:
+							isimatriks = bacaIsiMatriks();
+							Matriks matriks22 = new Matriks(isimatriks);
+							System.out.printf("Determinan matriks ini adalah %f%n", determinan2(matriks22));
+							break;							
+					}
 					break;
 				case 3:
 					isimatriks = bacaIsiMatriks();
 					Matriks matriks3 = new Matriks(isimatriks);
 					
+					System.out.println("Balikan matriks ini adalah");
 					System.out.println(inverse1(matriks3));
 					break;
 				case 4:
