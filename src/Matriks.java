@@ -276,32 +276,124 @@ public class Matriks{
 		tulisMatriks(matriks);
 	}
 	
-	// Prosedur inverse matriks versi 1 - Operasi Baris Elementer
+	// Prosedur Penyelesaian SPL dengan Kaidah Cramer
+	public static void cramer(Matriks matriksA, Matriks matriksb){
+		Matriks matsub = new Matriks(matriksA.matriks);
+		int idbrs, idkol;
+		double det, temp;
+		
+		if((matriksA.nbrs != matriksA.nkol) || (matriksA.nbrs != matriksb.nbrs) || (matriksb.nkol != 1)){
+			System.out.println("SPL ini tidak bisa diselesaikan dengan Cramer");
+		} else if(determinan1(matriksA) == 0){
+			System.out.println("SPL ini tidak ada solusi");
+		} else {
+			det = determinan1(matsub);
+			for(idkol = 0; idkol < matsub.nkol; idkol++){
+				for(idbrs = 0; idbrs < matsub.nbrs; idbrs++){
+					matsub.matriks[idbrs][idkol] = matriksb.matriks[idbrs][0];
+				}
+				temp = determinan1(matsub)/det;
+				System.out.printf("%f ", temp);
+				for(idbrs = 0; idbrs < matsub.nbrs; idbrs++){
+					matsub.matriks[idbrs][idkol] = matriksA.matriks[idbrs][idkol];
+				}
+			}
+		}
+		System.out.printf("%n");
+	} 
+	
+	// Fungsi inverse matriks versi 1 - Operasi Baris Elementer
 	public static Matriks inverse1(Matriks matriks){
 		
 		Matriks iden = matriksSatuan(matriks.nbrs);
+		Matriks matout = new Matriks(matriks.nbrs, matriks.nkol);
+		Matriks fail = new Matriks(1, 1);
 		
-		int idbrs = 0, idkol = 0;
-		boolean brsfullzero = false;
-		boolean foundnonzero;
+		double rasio, temp;
+		int idbrs, idkol, x, k;
+		boolean brsfullnol = true;
 		
-		toMatriksSegitigaBawah(matriks);
-		while(!brsfullzero && idbrs < matriks.nbrs){
-			foundnonzero = false;
-			while(!foundnonzero && idkol < matriks.nkol){
-				if(matriks.matriks[idbrs][idkol] != 0){
-					kalikBaris(matriks, 1/idbrs, matriks.matriks[idbrs][idkol]);
-					foundnonzero = true;
-				}
+		// Salin matriks
+		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
+			for (idkol = 0; idkol < matriks.nkol; idkol++){
+				matout.matriks[idbrs][idkol] = matriks.matriks[idbrs][idkol];
 			}
-			if(!foundnonzero){
-				brsfullzero = true;
-			}
-			idbrs++;
 		}
 		
-		return(matriks);
+		// Jadiin matriks segitiga bawah
+		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
+			if (matout.matriks[idbrs][idbrs] == 0){
+				brsfullnol = true;
+				x = idbrs+1;
+				while(brsfullnol && (x < matriks.nbrs)){
+					if(matout.matriks[x][idbrs] != 0){
+						for(k = 0; k < matriks.nkol; k++){
+							matout = tukarBaris(matout, idbrs, x);
+							iden = tukarBaris(iden, idbrs, x);
+						}
+						brsfullnol = false;                    
+					} else {
+						x += 1;
+					}
+				}
+				if(brsfullnol){
+					System.out.println("Matriks singular");
+					return fail;
+				}
+			} else {
+				for(idkol = idbrs+1; idkol < matriks.nkol; idkol++){
+					rasio = matout.matriks[idkol][idbrs]/matout.matriks[idbrs][idbrs];
+					for(k = 0; k < matriks.nkol; k++){
+						matout.matriks[idkol][k] -= (matout.matriks[idbrs][k]*rasio);
+						iden.matriks[idkol][k] -= (iden.matriks[idbrs][k]*rasio);
+					}
+				}
+			}
+		}
+		
+		// Jadiin matriks segitiga atas
+		for(idbrs = matriks.nbrs - 1; idbrs >= 0; idbrs--){
+			if (matout.matriks[idbrs][idbrs] == 0){
+				brsfullnol = true;
+				x = idbrs-1;
+				while(brsfullnol && (x >= 0)){
+					if(matout.matriks[x][idbrs] != 0){
+						for(k = matriks.nkol - 1; k >= 0; k--){
+							matout = tukarBaris(matout, idbrs, x);
+							iden = tukarBaris(iden, idbrs, x);
+						}
+						brsfullnol = false;                    
+					} else {
+						x -= 1;
+					}
+				}
+				if(brsfullnol){
+					System.out.println("Matriks singular");
+				}
+			} else {
+				for(idkol = idbrs-1; idkol >= 0; idkol--){
+					rasio = matout.matriks[idkol][idbrs]/matout.matriks[idbrs][idbrs];
+					for(k = matriks.nkol - 1; k >= 0; k--){
+						matout.matriks[idkol][k] -= (matout.matriks[idbrs][k]*rasio);
+						iden.matriks[idkol][k] -= (iden.matriks[idbrs][k]*rasio);
+					}
+				}
+			}
+		}
+		
+		// Bagi diagonal
+		for(idbrs = 0; idbrs < matriks.nbrs; idbrs++){
+			kalikBaris(iden, idbrs, 1/matout.matriks[idbrs][idbrs]);
+		}
+		
+		// return hasil 
+		return(iden);
 	}
+	
+	// Fungsi Balikan Matriks versi 2 - Ekspansi Kofaktor
+/*	public static Matriks inverse2(Matriks matriks){
+		return;
+	} */
 	
 	// Fungsi Determinan Matriks versi 1 - Operasi Baris Elementer
 	public static double determinan1(Matriks matriks){
@@ -366,19 +458,21 @@ public class Matriks{
 	//public static double determinan2(Matriks matriks){
 	//	return(0);
 	//}
-	public static double detekspansikofaktor(double[][] m){
-    	int msize = m.length * m.length, posneg, temp, tf;
+/*	public static double detekspansikofaktor(double[][] m){
+    	int msize = m.length * m.length, posneg, temp;
+		boolean tf;
     	double res = 0;
+		if(msize == 1) return m[0][0];
    		if(msize == 4)  return ((m[0][0] * m[1][1]) - (m[0][1] * m[1][0]));
-    	double[][] mtemp;
+    	double[][] mtemp = new double[m.length][m.length];
     	for(int i = 0; i < m.length - 1; i++){
         	temp = 0;
-        	tf = 0;
+        	tf = false;
         	for (int j = 0; j < m.length - 1 ; j++) {
             	for (int k = 0 ; k < m.length - 1 ; k++) {
                 	if((j == i) && !tf) {
                     	temp++;
-                    	tf = 1;
+                    	tf = true;
                 	}
                 	mtemp[j][k] = m[temp][k + 1];
             	}
@@ -387,14 +481,17 @@ public class Matriks{
         	posneg = 1 - (2 * (i & 1));
         	res += (m[i][0] * detekspansikofaktor(mtemp) * posneg);
     	}
-    	return res;
-	}
-	public static double deteselonbaris(double[][] m, int[] idx){
-    	double[] n, res = 1;
+    	return res; 
+	} */
+	
+/*	public static double deteselonbaris(double[][] m, int[] idx){
+    	double[] n;
+		double res = 1;
+		double temp1, temp2;
     	n = new double[m.length];
     	for(int i = 0; i < m.length; i++)   idx[i] = i;
     	for(int i = 0; i < m.length; i++){
-        	double temp1 = 0, temp2;
+        	temp1 = 0;
         	for(int j = 0; j < m.length; j++){
             	temp2 = m[i][j];
             	if((Math.abs(temp2) > temp1))   temp2 = temp1;
@@ -403,7 +500,7 @@ public class Matriks{
     	}
     	int temp = 0;
     	for(int j = 0; j < m.length - 1; j++){
-        	double temp1 = 0, temp2;
+        	temp1 = 0;
         	for(int i = j; i < m.length; i++){
             	temp2 = Math.abs(m[idx[i]][j]) / n[idx[i]];
             	if(temp2 > temp1){
@@ -413,18 +510,19 @@ public class Matriks{
         	}
         	swapp(idx[j], idx[temp]);
         	for(int i = j + 1; i < m.length; i++){
-            	double eselon = m[idx[i]][j] / m[idx[j][j];
+            	double eselon = m[idx[i]][j] / m[idx[j]][j];
             	m[idx[i]][j] = eselon;
             	for(int k = j + 1; k < m.length; k++)   m[idx[i]][k] -= (eselon * m[idx[j]][i]);
         	}
     	}
     	for(int i = 0; i < m.length; i++)   res *= m[i][i];
     	return (res);
-	}
+	} */
+
 	// Prosedur menu utama
 	public static void main(String[] args){
-		boolean akses = true, valid, validspl, validdet;
-		int pilihan = 0, pilspl = 0, pildet = 0;
+		boolean akses = true, valid, validspl, validdet, validinv;
+		int pilihan = 0, pilspl = 0, pildet = 0, pilinv = 0;
 		int brs = 0, kol = 0;
 		Scanner sc = new Scanner(System.in);
 		double[][] isimatriks;
@@ -481,13 +579,14 @@ public class Matriks{
 							break;
 						case 3:
 							isimatriks = bacaIsiMatriks();
-							Matriks matriks13 = new Matriks(isimatriks);
 							
 							break;
 						case 4:
 							isimatriks = bacaIsiMatriks();
-							Matriks matriks14 = new Matriks(isimatriks);
-							
+							Matriks matriks141 = new Matriks(isimatriks);
+							isimatriks = bacaIsiMatriks();
+							Matriks matriks142 = new Matriks(isimatriks);
+							cramer(matriks141, matriks142);
 							break;
 					}
 					break;
@@ -498,7 +597,7 @@ public class Matriks{
 					while(!validdet){
 						System.out.println("Pilih menu yang ingin dipilih dengan angka 1-2: ");
 						pildet = sc.nextInt();
-						if(pilihan > 2 || pilihan < 1){
+						if(pildet > 2 || pildet < 1){
 							System.out.println("Pilihan tidak ada. Masukkan kembali");
 						} else {
 							validdet = true;
@@ -513,16 +612,36 @@ public class Matriks{
 						case 2:
 							isimatriks = bacaIsiMatriks();
 							Matriks matriks22 = new Matriks(isimatriks);
-							System.out.printf("Determinan matriks ini adalah %f%n", determinan2(matriks22));
+							//System.out.printf("Determinan matriks ini adalah %f%n", detekspansikofaktor(matriks22.matriks));
 							break;							
 					}
 					break;
 				case 3:
-					isimatriks = bacaIsiMatriks();
-					Matriks matriks3 = new Matriks(isimatriks);
-					
-					System.out.println("Balikan matriks ini adalah");
-					System.out.println(inverse1(matriks3));
+					validinv = false;
+					System.out.println("1. Metode Operasi Baris Elementer");
+					System.out.println("2. Metode Kofaktor");
+					while(!validinv){
+						System.out.println("Pilih menu yang ingin dipilih dengan angka 1-2: ");
+						pilinv = sc.nextInt();
+						if(pilinv > 2 || pilinv < 1){
+							System.out.println("Pilihan tidak ada. Masukkan kembali");
+						} else {
+							validinv = true;
+						}
+					}
+					switch(pilinv){
+						case 1:
+							isimatriks = bacaIsiMatriks();
+							Matriks matriks31 = new Matriks(isimatriks);
+							System.out.println("Balikan matriks ini adalah");
+							tulisMatriks(inverse1(matriks31)); 
+							break;
+						case 2:
+							isimatriks = bacaIsiMatriks();
+							Matriks matriks32 = new Matriks(isimatriks);
+							//System.out.printf("Balikan matriks ini adalah %f%n", inverse2(matriks22));
+							break;							
+					}
 					break;
 				case 4:
 					isimatriks = bacaIsiMatriks();
