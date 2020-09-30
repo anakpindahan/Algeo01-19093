@@ -363,10 +363,64 @@ public class Matriks{
 	}
 		
 	// Fungsi Determinan Matriks versi 2 - Metode ekspansi kofaktor
-	public static double determinan2(Matriks matriks){
-		return(0);
+	//public static double determinan2(Matriks matriks){
+	//	return(0);
+	//}
+	public static double detekspansikofaktor(double[][] m){
+    	int msize = m.length * m.length, posneg, temp, tf;
+    	double res = 0;
+   		if(msize == 4)  return ((m[0][0] * m[1][1]) - (m[0][1] * m[1][0]));
+    	double[][] mtemp;
+    	for(int i = 0; i < m.length - 1; i++){
+        	temp = 0;
+        	tf = 0;
+        	for (int j = 0; j < m.length - 1 ; j++) {
+            	for (int k = 0 ; k < m.length - 1 ; k++) {
+                	if((j == i) && !tf) {
+                    	temp++;
+                    	tf = 1;
+                	}
+                	mtemp[j][k] = m[temp][k + 1];
+            	}
+            	temp++;
+        	}
+        	posneg = 1 - (2 * (i & 1));
+        	res += (m[i][0] * detekspansikofaktor(mtemp) * posneg);
+    	}
+    	return res;
 	}
-	
+	public static double deteselonbaris(double[][] m, int[] idx){
+    	double[] n, res = 1;
+    	n = new double[m.length];
+    	for(int i = 0; i < m.length; i++)   idx[i] = i;
+    	for(int i = 0; i < m.length; i++){
+        	double temp1 = 0, temp2;
+        	for(int j = 0; j < m.length; j++){
+            	temp2 = m[i][j];
+            	if((Math.abs(temp2) > temp1))   temp2 = temp1;
+        	}
+        	n[i] = temp2;
+    	}
+    	int temp = 0;
+    	for(int j = 0; j < m.length - 1; j++){
+        	double temp1 = 0, temp2;
+        	for(int i = j; i < m.length; i++){
+            	temp2 = Math.abs(m[idx[i]][j]) / n[idx[i]];
+            	if(temp2 > temp1){
+                	temp1 = temp2;
+                	temp = i;
+            	}
+        	}
+        	swapp(idx[j], idx[temp]);
+        	for(int i = j + 1; i < m.length; i++){
+            	double eselon = m[idx[i]][j] / m[idx[j][j];
+            	m[idx[i]][j] = eselon;
+            	for(int k = j + 1; k < m.length; k++)   m[idx[i]][k] -= (eselon * m[idx[j]][i]);
+        	}
+    	}
+    	for(int i = 0; i < m.length; i++)   res *= m[i][i];
+    	return (res);
+	}
 	// Prosedur menu utama
 	public static void main(String[] args){
 		boolean akses = true, valid, validspl, validdet;
