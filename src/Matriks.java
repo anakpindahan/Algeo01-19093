@@ -151,6 +151,21 @@ public class Matriks{
 		return(matriks);
 	}
 	
+	// Proseddur mengalikan dua buah matriks
+	public static Matriks kaliMatriks(Matriks matriks1, Matriks matriks2){
+		double temp;
+		int idbrs, idkol, id; 
+		Matriks matriks = new Matriks(matriks1.nbrs, matriks2.nkol);
+		for(idbrs = 0; idbrs < matriks1.nbrs; idbrs++){
+			for(idkol = 0; idkol < matriks2.nkol; idkol++){
+				for(id = 0; id < matriks1.nkol; id++){
+					matriks.matriks[idbrs][idkol] += matriks1.matriks[idbrs][id] * matriks2.matriks[id][idkol];
+				}
+			}
+		}
+		return(matriks);
+	}
+	
 	// Prosedur menuliskan matriks ke layar
 	public static void tulisMatriks(Matriks matriks){
 		int idbrs, idkol;
