@@ -451,72 +451,33 @@ public class Matriks{
 		return(det);
 	}
 		
-	// Fungsi Determinan Matriks versi 2 - Metode ekspansi kofaktor
-	//public static double determinan2(Matriks matriks){
-	//	return(0);
-	//}
-/*	public static double detekspansikofaktor(double[][] m){
-    	int msize = m.length * m.length, posneg, temp;
-		boolean tf;
-    	double res = 0;
-		if(msize == 1) return m[0][0];
-   		if(msize == 4)  return ((m[0][0] * m[1][1]) - (m[0][1] * m[1][0]));
-    	double[][] mtemp = new double[m.length][m.length];
-    	for(int i = 0; i < m.length - 1; i++){
-        	temp = 0;
-        	tf = false;
-        	for (int j = 0; j < m.length - 1 ; j++) {
-            	for (int k = 0 ; k < m.length - 1 ; k++) {
-                	if((j == i) && !tf) {
-                    	temp++;
-                    	tf = true;
-                	}
-                	mtemp[j][k] = m[temp][k + 1];
-            	}
-            	temp++;
-        	}
-        	posneg = 1 - (2 * (i & 1));
-        	res += (m[i][0] * detekspansikofaktor(mtemp) * posneg);
-    	}
-    	return res; 
-	} */
-	
-/*	public static double deteselonbaris(double[][] m, int[] idx){
-    	double[] n;
-		double res = 1;
-		double temp1, temp2;
-    	n = new double[m.length];
-    	for(int i = 0; i < m.length; i++)   idx[i] = i;
-    	for(int i = 0; i < m.length; i++){
-        	temp1 = 0;
-        	for(int j = 0; j < m.length; j++){
-            	temp2 = m[i][j];
-            	if((Math.abs(temp2) > temp1))   temp2 = temp1;
-        	}
-        	n[i] = temp2;
-    	}
-    	int temp = 0;
-    	for(int j = 0; j < m.length - 1; j++){
-        	temp1 = 0;
-        	for(int i = j; i < m.length; i++){
-            	temp2 = Math.abs(m[idx[i]][j]) / n[idx[i]];
-            	if(temp2 > temp1){
-                	temp1 = temp2;
-                	temp = i;
-            	}
-        	}
-        	swapp(idx[j], idx[temp]);
-        	for(int i = j + 1; i < m.length; i++){
-            	double eselon = m[idx[i]][j] / m[idx[j]][j];
-            	m[idx[i]][j] = eselon;
-            	for(int k = j + 1; k < m.length; k++)   m[idx[i]][k] -= (eselon * m[idx[j]][i]);
-        	}
-    	}
-    	for(int i = 0; i < m.length; i++)   res *= m[i][i];
-    	return (res);
-	} */
+	// Fungsi Determinan Matriks versi 2 - Metode Ekspansi Kofaktor
+	public static double determinan2(Matriks M){
+		if ((M.nbrs*M.nkol)== 4) return ((float)((M.matriks[0][0] * M.matriks[1][1]) - (M.matriks[1][0] * M.matriks[0][1])));
+		float res = 0;
+		boolean tf = false;
+		int posneg = 0, temp = 0;
+		Matriks mtemp =  new Matriks(M.nbrs - 1,M.nkol - 1);
+		for (int i = 0 ; i < M.nbrs ; i++) {
+			temp = 0;
+			tf = false;
+			for (int j = 0; j < mtemp.nbrs ; j++) {
+				for (int k = 0; k < mtemp.nkol ; k++) {
+					if((j == i) && !tf) {
+						temp++;
+						tf = true;
+					}
+					mtemp.matriks[j][k] = M.matriks[temp][k+1];
+				}
+				temp++;
+			}
+			posneg = 1 - 2 * (i & 1);
+			res += (M.matriks[i][0] * determinan2(mtemp) * posneg);
+		}
+		return res;
+	} 
 
-
+	// Fungsi baca titik
 	public static void bacatitikjadimatriks(double[][] matriks){
 		int idbrs, idkol;
 		System.out.println("Masukkan titik titik");
@@ -669,7 +630,7 @@ public class Matriks{
 						case 2:
 							isimatriks = bacaIsiMatriks();
 							Matriks matriks22 = new Matriks(isimatriks);
-							//System.out.printf("Determinan matriks ini adalah %f%n", detekspansikofaktor(matriks22.matriks));
+							System.out.printf("Determinan matriks ini adalah %f%n", determinan2(matriks22));
 							break;							
 					}
 					break;
