@@ -1,4 +1,5 @@
-import java.util.Scanner;
+import java.util.Scanner; 
+import java.util.ArrayList;
 
 public class Matriks{
 	// Atribut matriks
@@ -18,7 +19,7 @@ public class Matriks{
 		int idbrs, idkol;
 		nbrs = m.length;
 		nkol = m[0].length;
-		matriks = new double[nbrs][nkol];
+		matriks = new double[nbrs][nkol];	
 		for(idbrs = 0; idbrs < nbrs; idbrs++){
 			for(idkol = 0; idkol < nkol; idkol++){
 				matriks[idbrs][idkol] = m[idbrs][idkol];
@@ -67,10 +68,10 @@ public class Matriks{
 	public static Matriks transposeMatriks(Matriks matriksin){
 		int idbrs, idkol;
 		double[][] mout;
-		mout = new double[matriksin.nbrs][matriksin.nkol];
+		mout = new double[matriksin.nkol][matriksin.nbrs];
 		for(idbrs = 0; idbrs < matriksin.nbrs; idbrs++){
 			for(idkol = 0; idkol < matriksin.nkol; idkol++){
-				mout[idbrs][idkol] = matriksin.matriks[idkol][idbrs];
+				mout[idkol][idbrs] = matriksin.matriks[idbrs][idkol];
 			}
 		}
 		Matriks matriksout = new Matriks(mout);
@@ -195,86 +196,82 @@ public class Matriks{
 		return(iden);
 	}
 	
-	//Prosedur membuat matriks menjadi segitiga atas
-	public static Matriks toMatriksSegitigaAtas(Matriks matriks){
-		int idbrs, idkol, cidbrs, lastidbrs = matriks.nbrs - 1;
-		boolean kolfullzero;
-	
-		for(idkol = matriks.nkol - 1; idkol >= 0; idkol--){
-			kolfullzero = true;
-			idbrs = matriks.nbrs - 1;
-			while(kolfullzero && idbrs >= 0){
-				if(matriks.matriks[idbrs][idkol] != 0){
-					kolfullzero = false;
-				} else {
-					idbrs--;
-				}
-			}
-			cidbrs = idbrs;
-			
-			matriks = tukarBaris(matriks, cidbrs, lastidbrs);
-			
-			for(idbrs = cidbrs - 1; idbrs >=0; idbrs--){
-				if(matriks.matriks[idbrs][idkol] != 0){
-					matriks = pluskBaris(matriks, idbrs, lastidbrs, -(matriks.matriks[lastidbrs][idkol]/matriks.matriks[idbrs][idkol]));
-				}
-			}
-			
-			lastidbrs--;
-		}
-		return(matriks);
-	}
-	
 	// Prosedur membuat matriks menjadi matriks segitiga bawah
-	public static void toMatriksSegitigaBawah(Matriks matriks){
-		int idbrs, idkol, cidbrs, frstidbrs = 0;
-		boolean kolfullzero;
+	public static void toMatriksSegitigaBawah(Matriks matriks){ 
+        int i, j, k, x;
+        boolean brsfullnol;
+		double rasio;
 		
-		for(idkol = 0; idkol < matriks.nkol; idkol++){
-			kolfullzero = true;
-			idbrs = 0;
-			while(kolfullzero && (idbrs < matriks.nbrs)){
-				if(matriks.matriks[idbrs][idkol] != 0){
-					kolfullzero = false;
-				} else {
-					idbrs++;
-				}
-			}
-			cidbrs = idbrs;
-			
-			tukarBaris(matriks, cidbrs, frstidbrs);
-			
-			for(idbrs = cidbrs + 1; idbrs < matriks.nbrs; idbrs++){
-				if(matriks.matriks[idbrs][idkol] != 0){
-					pluskBaris(matriks, frstidbrs, idbrs, -(matriks.matriks[frstidbrs][idkol]/matriks.matriks[idbrs][idkol]));
-				}
-			}
-			
-			frstidbrs++;
+        for (i = 0; i < Math.min(matriks.nbrs, matriks.nkol); i++){
+            if (matriks.matriks[i][i] == 0){
+                brsfullnol = true;
+                x = i+1;
+                while(brsfullnol && (x < matriks.nbrs)){
+                    if(matriks.matriks[x][i] != 0){
+                        tukarBaris(matriks, x, i);
+                        brsfullnol=false;
+                        }                  
+                    else {
+                        x += 1;
+                    }
+                }
+            } 
+            else {
+                for(j = i+1; j < matriks.nbrs; j++){
+                    rasio = matriks.matriks[j][i]/matriks.matriks[i][i];
+                    for(k = 0; k < matriks.nkol; k++){
+                        matriks.matriks[j][k] -= (matriks.matriks[i][k]*rasio);
+                    }
+                }
+            }
 		}
 	}
-	
+
 	// Prosedur eliminasi gauss di matriks
 	public static void gaussElim(Matriks matriks){
-		int idbrs = 0, idkol = 0;
+		int idbrs = 0, idkol = 0, i;
 		boolean brsfullzero = false;
 		boolean foundnonzero;
 		toMatriksSegitigaBawah(matriks);
-		while(!brsfullzero && idbrs < matriks.nbrs){
-			foundnonzero = false;
-			while(!foundnonzero && idkol < matriks.nkol){
-				if(matriks.matriks[idbrs][idkol] != 0){
-					kalikBaris(matriks, idbrs, 1/matriks.matriks[idbrs][idkol]);
-					foundnonzero = true;
+        for (idbrs = 0; idbrs<Math.min(matriks.nbrs, matriks.nkol); idbrs++){
+            if (matriks.matriks[idbrs][idbrs] != 0){
+                kalikBaris(matriks, idbrs, 1/matriks.matriks[idbrs][idbrs]);
+            }
+		}
+	}
+
+	public static void gaussJordanElim(Matriks matriks){
+		gaussElim(matriks);
+		int i, j, k;
+		double rasio;
+		for(i = Math.min(matriks.nbrs, matriks.nkol)-1; i > 0; i--){
+			if (matriks.matriks[i][i] != 0){
+				for (j= i-1; j>=0; j--){
+					rasio = matriks.matriks[j][i]/matriks.matriks[i][i];
+					for(k = 0; k < matriks.nkol; k++){
+						matriks.matriks[j][k] -= (matriks.matriks[i][k]*rasio);
+					}
 				}
 			}
-			if(!foundnonzero){
-				brsfullzero = true;
-			}
-			idbrs++;
 		}
-		tulisMatriks(matriks);
 	}
+
+	//Prosedur Penyelesaian SPL dengan hasil kali matriks balikan
+	public static void splInverse(Matriks matriksA, Matriks matriksb){
+		Matriks matsub = new Matriks(matriksA.nbrs, matriksA.nkol);
+		Matriks matout = new Matriks(matriksb.nbrs, matriksb.nkol);
+		
+		if((matriksA.nbrs != matriksA.nkol) || (matriksA.nbrs != matriksb.nbrs) || (matriksb.nkol != 1)){
+			System.out.println("SPL ini tidak bisa diselesaikan dengan mengalikan balikan matriks");
+		} else if(determinan1(matriksA) == 0){
+			System.out.println("SPL ini tidak ada solusi");
+		} else {
+			matsub = inverse1(matriksA);
+			matout = kaliMatriks(matsub, matriksb);
+			tulisMatriks(transposeMatriks(matout));
+		}
+		System.out.printf("%n");
+	} 
 	
 	// Prosedur Penyelesaian SPL dengan Kaidah Cramer
 	public static void cramer(Matriks matriksA, Matriks matriksb){
@@ -458,13 +455,13 @@ public class Matriks{
 	//public static double determinan2(Matriks matriks){
 	//	return(0);
 	//}
-	public static double detekspansikofaktor(Matriks m){
+/*	public static double detekspansikofaktor(double[][] m){
     	int msize = m.length * m.length, posneg, temp;
 		boolean tf;
     	double res = 0;
-		if(msize == 1)	return m[0][0];
+		if(msize == 1) return m[0][0];
    		if(msize == 4)  return ((m[0][0] * m[1][1]) - (m[0][1] * m[1][0]));
-    	Matriks mtemp = new Matriks[m.length][m.length];
+    	double[][] mtemp = new double[m.length][m.length];
     	for(int i = 0; i < m.length - 1; i++){
         	temp = 0;
         	tf = false;
@@ -482,7 +479,7 @@ public class Matriks{
         	res += (m[i][0] * detekspansikofaktor(mtemp) * posneg);
     	}
     	return res; 
-	} 
+	} */
 	
 /*	public static double deteselonbaris(double[][] m, int[] idx){
     	double[] n;
@@ -518,6 +515,63 @@ public class Matriks{
     	for(int i = 0; i < m.length; i++)   res *= m[i][i];
     	return (res);
 	} */
+
+
+	public static void bacatitikjadimatriks(double[][] matriks){
+		int idbrs, idkol;
+		System.out.println("Masukkan titik titik");
+
+		Scanner input = new Scanner(System.in);
+		
+	
+		for(idbrs=0; idbrs<matriks.length; idbrs++){
+			System.out.print("masukkan titik x (spasi) y: ");
+			double x = input.nextDouble();
+			double y = input.nextDouble();
+			matriks[idbrs][matriks[0].length-1] = y;
+	
+			for(idkol = 0; idkol < matriks[0].length-1; idkol++){
+				matriks[idbrs][idkol] = Math.pow(x, idkol);
+			}
+		}
+	}
+	
+	public static void interpolasi(){
+		Scanner sc = new Scanner(System.in);
+		int n;
+		System.out.println("Masukkan banyaknya titik: ");
+		n = sc.nextInt();
+		double[][] matriks;
+		matriks = new double[n][n+1];
+	
+		bacatitikjadimatriks(matriks);
+		Matriks matrix = new Matriks(matriks);
+		gaussJordanElim (matrix);
+		System.out.println("koefisien dari x^0 sampai x^(n-1) adalah: ");
+		int i;
+		for (i = 0; i<n-1; i++){
+			System.out.printf("%f ", matrix.matriks[i][n]);
+		}
+		System.out.printf("%f\n", matrix.matriks[n-1][n]);
+
+		int pilih;
+		double x;
+		System.out.println("Pilih 0 untuk ke menu utama, pilih 1 untuk menaksir nilai f(x): ");
+		pilih = sc.nextInt();
+		while (pilih == 1){
+			double hasil = 0;
+			System.out.println("Masukkan x yang ingin ditaksir: ");
+			x = sc.nextDouble();
+			for (i = 0; i<n; i++){
+				hasil += Math.pow(x, i)* matrix.matriks[i][n];
+			}
+			System.out.printf("nilai f(x) adalah %f\n", hasil);
+
+			System.out.println("Pilih 0 untuk ke menu utama, pilih 1 untuk menaksir nilai f(x): ");
+			pilih = sc.nextInt();
+		}
+	}
+		
 
 	// Prosedur menu utama
 	public static void main(String[] args){
@@ -568,18 +622,21 @@ public class Matriks{
 							Matriks matriks11 = new Matriks(isimatriks);
 							
 							gaussElim(matriks11);
-							// tulisMatriks(matriks);
+							tulisMatriks(matriks11);
 							break;
 						case 2:
 							isimatriks = bacaIsiMatriks();
 							Matriks matriks12 = new Matriks(isimatriks);
 							
-							// gaussJordanElim(matriks);
-							// tulisMatriks(matriks);
+							gaussJordanElim(matriks12);
+							tulisMatriks(matriks12);
 							break;
 						case 3:
 							isimatriks = bacaIsiMatriks();
-							
+							Matriks matriks131 = new Matriks(isimatriks);
+							isimatriks = bacaIsiMatriks();
+							Matriks matriks132 = new Matriks(isimatriks);
+							splInverse(matriks131, matriks132);
 							break;
 						case 4:
 							isimatriks = bacaIsiMatriks();
@@ -644,8 +701,7 @@ public class Matriks{
 					}
 					break;
 				case 4:
-					isimatriks = bacaIsiMatriks();
-					Matriks matriks4 = new Matriks(isimatriks);
+					interpolasi();
 					
 					break;
 				case 5:
