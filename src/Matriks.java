@@ -1,5 +1,7 @@
 import java.util.Scanner; 
 import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Matriks{
 	// Atribut matriks
@@ -541,7 +543,7 @@ public class Matriks{
 		int brs = 0, kol = 0;
 		Scanner sc = new Scanner(System.in);
 		double[][] isimatriks;
-		
+		String fileName = "src/outputt.txt";
 		while(akses){
 			valid = false;
 			System.out.println("---------UwU---------");
@@ -581,8 +583,16 @@ public class Matriks{
 						case 1:
 							isimatriks = bacaIsiMatriks();
 							Matriks matriks11 = new Matriks(isimatriks);
-							
 							gaussElim(matriks11);
+							Matriks outt = matriks11;
+							try {
+            					FileWriter fileWriter = new FileWriter(fileName);
+            					fileWriter.write(outt);
+            					fileWriter.close();
+        					} 
+        					catch (IOException e) {
+            					System.out.println("ups salah" + e.getMessage());
+        					}
 							tulisMatriks(matriks11);
 							break;
 						case 2:
