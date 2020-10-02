@@ -464,7 +464,7 @@ public class Matriks{
     	double res = 0;
 		if(msize == 1) return m[0][0];
    		if(msize == 4)  return ((m[0][0] * m[1][1]) - (m[0][1] * m[1][0]));
-    	double[][] mtemp = new double[m.length][m.length];
+    	Matriks mtemp = new Matriks[m.length][m.length];
     	for(int i = 0; i < m.length - 1; i++){
         	temp = 0;
         	tf = false;
